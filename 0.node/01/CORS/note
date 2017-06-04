@@ -1,0 +1,3 @@
+跨域资源共享，需要修改服务端：
+CROS ：(Cross Origin Resourse-Sharing)
+在服务端设定允许访问的域名。

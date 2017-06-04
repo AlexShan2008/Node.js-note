@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 404px;
+            margin: 20px auto;
+        }
+
+        h3 {
+            width: 404px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        p {
+            width: 404px;
+            overflow: hidden;
+            border: 1px solid black;
+            border-right: none;
+        }
+
+        p span {
+            float: left;
+            width: 100px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-right: 1px solid black;
+        }
+
+        ul {
+            width: 404px;
+            list-style: none;
+            border-left: 1px solid black;
+        }
+
+        ul li {
+            width: 404px;
+            overflow: hidden;
+            border-bottom: 1px solid black;
+        }
+
+        ul li span {
+            float: left;
+            width: 100px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-right: 1px solid black;
+        }
+
+        button {
+            width: 80px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!--需要用到的数据接口
+    获取数据 getUserData;
+    添加用户数据 addUserData;
+    删除用户数据 delUserData;
+
+    -->
+    <h3>crm用户系统</h3>
+    <button id="addBtn">增加</button>
+    <p><span>id</span><span>name</span><span>tel</span><span>操作</span></p>
+    <!--<ul>-->
+    <!--<li><span>1</span><span>React</span><span>123123</span><span><a href="">删除</a></span></li>-->
+    <!--<li><span>2</span><span>React</span><span>456</span><span><a href="">删除</a></span></li>-->
+    <!--<li><span>3</span><span>React</span><span>132216</span><span><a href="">删除</a></span></li>-->
+    <!--</ul>-->
+</div>
+
+<script type="text/javascript" src="./jquery-1.8.3.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $.ajax({
+            url: '/getUserData',
+            type: 'GET',
+            dataType: 'json',
+            success: function (result) {
+                if (result && result.error === 0) { //正确获取数据；
+                    bindData(result['data']);
+                    typeof callback === 'function' ? callback(result['data']) : null;
+
+                }
+            }
+        });
+
+        function bindData(data) {
+            let str = '<ul>';
+            $.each(data, function () {
+                //利用ES6模板字符串，拼接字符串非常方便；英文输入法按左侧Esc下方的按键。
+                //点击修改时，利用url向修改用户信息的页面传递用户ID;
+                //点击删在删除按钮上绑定用户的ID, 点击删除按钮时，根据用户ID进行ajax请求。
+                str += `
+                    <li>
+                    <span>${this.id}</span>
+                    <span>${this.name}</span>
+                    <span>${this.tel}</span>
+                    <span><a href="/template/update.html?uid=${this.id}">修改</a>&nbsp;&nbsp;<a class="removeBtn" href="javascript:"  data-rid=${this.id}>删除</a></span>
+                    </li>
+                  `
+            });
+            str += '</ul>';
+            $('.container').append(str);
+
+            //删除用户数据；
+            let removeBtn = document.querySelectorAll('.removeBtn');
+            for (let i = 0, len = removeBtn.length; i < len; i++) {
+                let curBtn = removeBtn[i];
+                curBtn.onclick = removeInfo;
+
+
+                function removeInfo() {
+                    let  userList = document.getElementsByTagName('ul')[0];
+                    let rid = this.getAttribute('data-rid');
+                    let that = this;
+                    $.ajax({
+                        url: '/removeUserInfo',
+                        type: 'GET',
+                        data: {
+                            rid: rid
+                        },
+                        dataType: 'json',
+                        success: function (result) {
+                            if(result && result.error === 0) {
+                        userList.removeChild(that.parentNode.parentNode);
+                                alert(result.msg);
+                            }
+                        }
+                    })
+                }
+
+            }
+        }
+
+        //跳转到添加用户信息的页面；
+        let addBtn = document.getElementById('addBtn');
+        addBtn.onclick = function () {
+            window.location.href = "/template/addUser.html";
+        };
+
+
+
+
+    });
+</script>
+</body>
+</html>

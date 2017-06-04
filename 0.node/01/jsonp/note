@@ -1,0 +1,22 @@
+跨域：
+同源策略：协议、主机名（域名）、端口三者一致才是同源策略。只要有一个不同，就涉及到跨域。
+
+
+页面url : http://127.0.0.1:3000/
+
+接口url : http://127.0.0.1:3000/getTime
+
+webstormUrl: http://localhost:63342
+
+同源策略限制xhr请求；XMLHttpRequest;
+
+img、html 不存在跨域问题。
+
+运用script标签不存在跨域，我们就给src属性url地址，只要能找到就会给js引入进来。
+我们把请求的URL地址设为script属性，并且和后台定义一个字段，将我们全局中的函数名cb=callback。
+
+JSONP只支持GET请求方式。 是一种请求手段。
+
+
+JSON和JSONP没有任何关系。
+JSON是一种数据格式。

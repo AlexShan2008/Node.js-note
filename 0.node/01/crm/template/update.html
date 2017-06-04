@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="/index.html" style="text-decoration: none">返回>></a>
+<h3>修改用户信息页面</h3>
+<label for="user">用户名：</label>
+<input id="user" type="text" title="user"><br>
+<label for="user">联系方式：</label>
+<input id="tel" type="text" title="telephone"><br>
+<button id="submit">确认修改</button>
+<script type="text/javascript" src="../jquery-1.8.3.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        let user = document.getElementById('user');
+        let tel = document.getElementById('tel');
+
+//        根据URL获取当前用户ID；
+        function getUrlParam(url) {
+//            http://localhost:9080/template/update.html?uid=4
+//            ([^?&=]+)  从?或者&开始匹配，出现一次或者多次；
+            let reg =/([^?&=]+)=([^?&=]+)/g;
+            let obj = {};
+            url.replace(reg,function () {
+                obj[arguments[1]]=arguments[2];
+            });
+            return obj;
+        }
+        let urlParam = getUrlParam(window.location.href);
+
+        //根据用户ID，通过AJAX请求，自动获取当前用户的信息；
+        (function () {
+            $.ajax({
+                url:'/getUserInfo',
+                type:'get',
+                data:{
+                    id:urlParam.uid
+                },
+                dataType:"json",
+                success:function (result) {
+                    let data = result.data;
+                    user.value=data.name;
+                    tel.value =data.tel;
+                }
+            });
+        })();
+
+//        修改当前用户信息；
+        document.getElementById('submit').onclick= updateUserInfo;
+
+
+        //修改用户信息的请求；
+        function updateUserInfo() {
+            $.ajax({
+                url:'/updateUserInfo',
+                type:'POST',
+                data:{
+                    id:urlParam.uid,
+                    name:user.value,
+                    tel:tel.value
+                },
+                dataType:"json",
+                success:function (result) {
+                    if(result && result.error === 0) {
+                        alert(result.msg);
+                    }
+                }
+            })
+        }
+
+    });
+</script>
+</body>
+</html>
